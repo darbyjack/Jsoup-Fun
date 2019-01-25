@@ -67,26 +67,32 @@ public class JsoupFun {
         System.out.println("Input Plugin ID: ");
         String num = scanner.next();
 
+
+        buildObject(num, pluginList);
+
+        savePlugin(pluginList, jsonWriter);
+    }
+
+
+    /**
+     * Build the object to be cached
+     * @param num the object id
+     * @param plugins the cache to save to
+     * @throws IOException
+     */
+    private static void buildObject(String num, Map<String, SpigotObject> plugins) throws IOException {
+
         Document doc = Jsoup.connect(Constants.URL.replace("{id}", num)).userAgent(Constants.USER_AGENT).get();
 
         SpigotObject.SpigotObjectBuilder sob = SpigotObject.builder();
 
-        create(sob, doc);
-
-        SpigotObject so = sob.build();
-        pluginList.put(num, so);
-        savePlugin(pluginList, jsonWriter);
-    }
-
-    /**
-     * Creates the object builder
-     * @param sob the object builder
-     * @param doc jsoup document
-     */
-    private static void create(SpigotObject.SpigotObjectBuilder sob, Document doc) {
         sob.name(doc.select(Constants.NAME).text());
         sob.author(doc.select(Constants.AUTHOR).text());
         sob.downloads(doc.select(Constants.DOWNLOADS).text());
+
+        SpigotObject so = sob.build();
+
+        plugins.put(num, so);
     }
 
 }
